@@ -13,6 +13,8 @@ const newsType = document.getElementById("newsType");
 const newsDetails = document.getElementById("newsDetails");
 
 
+
+
 //Array
 
 var newsDataArr = [];
@@ -28,8 +30,11 @@ const TECHNOLOGY_NEWS = "https://newsapi.org/v2/top-headlines?country=in&categor
 const ENTERTAINMENT_NEWS = "https://newsapi.org/v2/top-headlines?country=in&category=technology&apiKey=";
 const SEARCH_NEWS = "https://newsapi.org/v2/everything?q=";
 
+
+
 window.onload = function() {
     newsType.innerHTML = "<h4></h4>";
+    console.log(" I am at onload ")
     fetchHeadlines();
 };
 
@@ -38,6 +43,7 @@ window.onload = function() {
 generalBtn.addEventListener("click",function(){
 
     fetchGeneralNews();
+    
 
 });
 
@@ -85,9 +91,11 @@ const fetchHeadlines = async () => {
     }
 
     displayNews();
+    console.log("Hurray General News")
 }
 
 const fetchGeneralNews = async () => {
+    console.log("Yes i am fetching general news");
     const response = await fetch(GENERAL_NEWS+API_KEY);
 
     newsDataArr = [];
@@ -102,6 +110,7 @@ const fetchGeneralNews = async () => {
     }
 
     displayNews();
+    console.log("Hurray General News")
 }
 
 const fetchBusinessNews = async () => {
@@ -198,7 +207,7 @@ function displayNews(){
     //     newsDetails.innerHTML = "<h5>No data found.</h5>"
     //     return;
     // };
-
+    console.log("Hurray General News")
     newsDataArr.forEach(news =>{
 
         var date = news.publishedAt.split("T");
@@ -233,8 +242,44 @@ function displayNews(){
         var link = document.createElement('a');
         link.className = "btn - btn-dark";
         link.setAttribute("target", "_blank");
+        link.setAttribute("data-url", news.url);
         link.href = news.url;
         link.innerHTML="Read more";
+
+
+        // link.addEventListener('click', function (event) {
+        //     console.log("Did i get a call ")
+        //    if (event.target && event.target.classList.contains('btn')) {
+        //         console.log("About to fetch")
+        //         // Send a request to the server to execute the Python script
+        //         fetch('/runcode')
+        //             .then(response => response.text())
+        //             .then(data => console.log(data))
+        //             .catch(error => console.error('Error:', error));
+        //     }
+        // });
+
+
+
+        link.addEventListener('click', function (event) {
+            console.log("link function")
+            if (event.target && event.target.classList.contains('btn')) {
+                const url = event.target.getAttribute('data-url');
+        
+                if (!url) {
+                    console.error('URL is missing.');
+                    return;
+                }
+        
+                // Send a request to the server to execute the Python script with the specified URL
+                fetch(`/scrape?url=${encodeURIComponent(url)}`)
+                    .then(response => response.text())
+                    .then(data => console.log(data))
+                    .catch(error => console.error('Error:', error));
+            }
+        });
+
+        document.body.appendChild(link);
 
         cardBody.appendChild(newsHeading);
         cardBody.appendChild(dateHeading);
@@ -249,4 +294,10 @@ function displayNews(){
         newsDetails.appendChild(col);
 
     });
+
+    
+    
+
+
+
 }

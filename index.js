@@ -2,13 +2,44 @@
 
 const express = require('express')
 const cors = require('cors')
+const { exec } = require('child_process');
 const { default: rateLimit } = require('express-rate-limit')
 require('dotenv').config()
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 3000
 
 const app = express()
 
+
+// app.get('/runcode', (req, res) => {
+//     // Execute your Python script here
+//     exec('python webscraper.py', (err, stdout, stderr) => {
+//         if (err) {
+//             console.error(err);
+//             return res.status(500).send('Error executing Python script');
+//         }
+//         console.log(stdout);
+//         res.send('Python script executed successfully');
+//     });
+// });
+
+app.get('/scrape', (req, res) => {
+    const url = req.query.url;
+
+    if (!url) {
+        return res.status(400).send('URL parameter is required.');
+    }
+
+    // Execute your Python script with the specified URL
+    exec(`python webscraper.py ${url}`, (err, stdout, stderr) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send('Error executing Python script');
+        }
+        console.log(stdout);
+        res.send('Python script executed successfully');
+    });
+});
 
 //rate limiting
 const limiter = rateLimit({
