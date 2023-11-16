@@ -247,20 +247,6 @@ function displayNews(){
         link.innerHTML="Read more";
 
 
-        // link.addEventListener('click', function (event) {
-        //     console.log("Did i get a call ")
-        //    if (event.target && event.target.classList.contains('btn')) {
-        //         console.log("About to fetch")
-        //         // Send a request to the server to execute the Python script
-        //         fetch('/runcode')
-        //             .then(response => response.text())
-        //             .then(data => console.log(data))
-        //             .catch(error => console.error('Error:', error));
-        //     }
-        // });
-
-
-
         link.addEventListener('click', function (event) {
             console.log("link function")
             if (event.target && event.target.classList.contains('btn')) {
