@@ -2,6 +2,12 @@ import sys
 import requests
 from bs4 import BeautifulSoup
 from rake_nltk import Rake
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.neighbors import NearestNeighbors
+import warnings
+
+warnings.filterwarnings("ignore", category=pd.errors.DtypeWarning)
 
 def extract_news_content(soup):
     article_elements = soup.find_all('article')
@@ -26,6 +32,19 @@ def extract_keywords(text_content):
     keywords = r.get_ranked_phrases()
     return keywords
 
+def write_keywords_to_file(keywords, output_file='keywords.txt'):
+    with open(output_file, 'w', encoding='utf-8') as file:
+        for keyword in keywords:
+            file.write(keyword + '\n')
+
+def recommend_movies(keywords, top_n=10):
+    keywords_vector = tfidf_vectorizer.transform([keywords])
+
+    _, movie_indices = knn_model.kneighbors(keywords_vector, n_neighbors=top_n)
+
+    recommended_movies = data.iloc[movie_indices[0]]
+    return recommended_movies
+
 if __name__ == "__main__":
     # Check if a URL is provided as a command-line argument
     if len(sys.argv) != 2:
@@ -45,3 +64,22 @@ if __name__ == "__main__":
     print("Keywords:")
     for keyword in keywords:
         print(keyword)
+
+    # Write keywords to a file
+    write_keywords_to_file(keywords)
+
+    # Load movie data
+    data = pd.read_csv('D:/New folder/movies_metadata.csv')
+    data['overview'].fillna('', inplace=True)
+
+    # Create TF-IDF matrix
+    tfidf_vectorizer = TfidfVectorizer(stop_words='english')
+    tfidf_matrix = tfidf_vectorizer.fit_transform(data['overview'])
+
+    # Create and fit the k-NN model
+    knn_model = NearestNeighbors(metric='cosine', algorithm='brute')
+    knn_model.fit(tfidf_matrix)
+
+    # Run movie recommendation
+    top_movies = recommend_movies(' '.join(keywords), top_n=15)
+    print(top_movies[['title', 'overview']])
