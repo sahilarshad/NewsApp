@@ -1,0 +1,5 @@
+step 1: npm init
+step 2: npm install 
+step 3: npm i node apicache cors dotenv express express-rate-limit needle
+step 4: add "start": "node index", to package.json file
+step 5: npm start
